@@ -31,12 +31,22 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-haze px-4">
+    <main className="min-h-screen flex items-center justify-center bg-ink relative overflow-hidden px-4">
+      <div
+        className="absolute inset-0 opacity-40"
+        style={{
+          background:
+            "radial-gradient(600px circle at 20% 20%, rgba(108,92,231,0.35), transparent 60%), radial-gradient(500px circle at 80% 80%, rgba(255,84,112,0.25), transparent 60%)",
+        }}
+      />
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-sm bg-white border border-line rounded-2xl p-8 shadow-sm"
+        className="relative w-full max-w-sm bg-white rounded-2xl p-8 shadow-2xl"
       >
-        <h1 className="font-display font-extrabold text-2xl mb-1">เข้าสู่ระบบแอดมิน</h1>
+        <span className="w-10 h-10 rounded-xl bg-grad-brand flex items-center justify-center mb-4">
+          <span className="w-3 h-3 rounded-full bg-white/95" />
+        </span>
+        <h1 className="font-display font-semibold text-2xl mb-1">เข้าสู่ระบบแอดมิน</h1>
         <p className="text-sm text-muted mb-6">จัดการสินค้าในร้านของคุณ</p>
 
         <label className="block text-sm font-medium mb-1">อีเมล</label>
@@ -59,7 +69,7 @@ export default function AdminLoginPage() {
           placeholder="••••••••"
         />
 
-        {error && <p className="text-sm text-red-500 mb-4">{error}</p>}
+        {error && <p className="text-sm text-accentDark mb-4">{error}</p>}
 
         <button type="submit" disabled={loading} className="btn-primary w-full">
           {loading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}

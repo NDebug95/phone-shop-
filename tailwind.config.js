@@ -7,20 +7,30 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        ink: "#141414",
+        ink: "#15132A",
         paper: "#ffffff",
-        haze: "#f5f5f7",
-        line: "#e6e6e9",
-        accent: "#ff6b00",
-        accentDark: "#e05e00",
-        muted: "#6b6b70",
+        surface: "#F6F4FF",
+        surfaceAlt: "#FFF1F0",
+        line: "#E7E3F7",
+        muted: "#726F8C",
+        primary: "#6C5CE7",
+        primaryDark: "#5546C8",
+        accent: "#FF5470",
+        accentDark: "#E63E5C",
+        mint: "#00C896",
+        mintDark: "#00A87D",
       },
       fontFamily: {
-        display: ["'Inter'", "system-ui", "sans-serif"],
+        display: ["'Space Grotesk'", "system-ui", "sans-serif"],
         body: ["'Inter'", "system-ui", "sans-serif"],
+        mono: ["'JetBrains Mono'", "ui-monospace", "monospace"],
       },
       maxWidth: {
         shell: "1280px",
+      },
+      backgroundImage: {
+        "grad-brand": "linear-gradient(135deg, #6C5CE7 0%, #FF5470 100%)",
+        "grad-mint": "linear-gradient(135deg, #00C896 0%, #6C5CE7 100%)",
       },
     },
   },

@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabaseClient";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import GradeGauge from "@/components/GradeGauge";
 import { notFound } from "next/navigation";
 
 export const revalidate = 0;
@@ -35,7 +36,7 @@ export default async function ProductPage({ params }) {
       <main className="container-shell py-10 md:py-16">
         <div className="grid md:grid-cols-2 gap-10 md:gap-16">
           <div>
-            <div className="aspect-square rounded-2xl bg-haze overflow-hidden mb-4">
+            <div className="aspect-square rounded-2xl bg-surface overflow-hidden mb-4 relative">
               {images[0] ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={images[0]} alt={product.name} className="w-full h-full object-cover" />
@@ -43,6 +44,11 @@ export default async function ProductPage({ params }) {
                 <div className="w-full h-full flex items-center justify-center text-muted">
                   ไม่มีรูปภาพ
                 </div>
+              )}
+              {!product.in_stock && (
+                <span className="absolute top-4 left-4 text-xs font-semibold px-3 py-1.5 rounded-full bg-ink/85 text-white backdrop-blur">
+                  ขายแล้ว
+                </span>
               )}
             </div>
             {images.length > 1 && (
@@ -53,7 +59,7 @@ export default async function ProductPage({ params }) {
                     key={i}
                     src={src}
                     alt={`${product.name} ${i + 2}`}
-                    className="aspect-square object-cover rounded-lg bg-haze"
+                    className="aspect-square object-cover rounded-lg bg-surface"
                   />
                 ))}
               </div>
@@ -62,41 +68,43 @@ export default async function ProductPage({ params }) {
 
           <div>
             {product.brand && (
-              <p className="text-xs uppercase tracking-widest text-muted mb-2">{product.brand}</p>
+              <p className="text-xs font-mono font-semibold uppercase tracking-widest text-primary mb-2">
+                {product.brand}
+              </p>
             )}
-            <h1 className="font-display font-extrabold text-3xl md:text-4xl mb-4">
+            <h1 className="font-display font-semibold text-3xl md:text-4xl mb-4">
               {product.name}
             </h1>
 
-            <div className="flex flex-wrap gap-2 mb-6">
-              {product.condition && (
-                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-accent/10 text-accentDark">
-                  เกรด {product.condition}
-                </span>
-              )}
+            <div className="flex flex-wrap items-center gap-2 mb-6">
+              {product.condition && <GradeGauge condition={product.condition} />}
               {product.storage_gb && (
-                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-haze text-muted">
+                <span className="text-xs font-mono font-semibold px-3 py-1.5 rounded-full bg-surface text-muted">
                   {product.storage_gb}
                 </span>
               )}
               {product.color && (
-                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-haze text-muted">
+                <span className="text-xs font-mono font-semibold px-3 py-1.5 rounded-full bg-surface text-muted">
                   สี{product.color}
                 </span>
               )}
             </div>
 
             <div className="flex items-baseline gap-3 mb-2">
-              <span className="text-3xl font-extrabold">฿{formatPrice(product.price)}</span>
+              <span className="text-3xl font-display font-semibold text-gradient">
+                ฿{formatPrice(product.price)}
+              </span>
               {product.original_price && product.original_price > product.price && (
-                <span className="text-lg text-muted line-through">
+                <span className="text-lg text-muted line-through font-mono">
                   ฿{formatPrice(product.original_price)}
                 </span>
               )}
             </div>
 
             {!product.in_stock && (
-              <p className="text-sm font-semibold text-red-500 mb-4">สินค้านี้ถูกจำหน่ายแล้ว</p>
+              <p className="text-sm font-semibold text-accentDark mb-4">
+                สินค้านี้ถูกจำหน่ายแล้ว
+              </p>
             )}
 
             {product.description && (
@@ -119,7 +127,7 @@ export default async function ProductPage({ params }) {
                     )}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="btn-secondary"
+                    className="btn-accent"
                   >
                     แชท WhatsApp
                   </a>

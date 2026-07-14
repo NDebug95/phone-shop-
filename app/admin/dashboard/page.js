@@ -146,17 +146,28 @@ export default function AdminDashboard() {
   }
 
   if (checkingAuth) {
-    return <div className="min-h-screen flex items-center justify-center text-muted">กำลังตรวจสอบสิทธิ์...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center text-muted">
+        กำลังตรวจสอบสิทธิ์...
+      </div>
+    );
   }
 
   return (
-    <main className="min-h-screen bg-haze pb-24">
+    <main className="min-h-screen bg-surface pb-24">
       <header className="bg-white border-b border-line sticky top-0 z-30">
         <div className="container-shell h-16 flex items-center justify-between">
-          <h1 className="font-display font-extrabold">แผงควบคุมแอดมิน</h1>
+          <div className="flex items-center gap-2.5">
+            <span className="w-7 h-7 rounded-lg bg-grad-brand flex items-center justify-center">
+              <span className="w-2 h-2 rounded-full bg-white/95" />
+            </span>
+            <h1 className="font-display font-semibold">แผงควบคุมแอดมิน</h1>
+          </div>
           <div className="flex gap-4 items-center">
-            <a href="/" className="text-sm text-muted hover:text-accent">ดูหน้าร้าน</a>
-            <button onClick={handleLogout} className="text-sm font-semibold text-red-500">
+            <a href="/" className="text-sm text-muted hover:text-primary transition-colors">
+              ดูหน้าร้าน
+            </a>
+            <button onClick={handleLogout} className="text-sm font-semibold text-accentDark">
               ออกจากระบบ
             </button>
           </div>
@@ -166,7 +177,7 @@ export default function AdminDashboard() {
       <div className="container-shell pt-8 grid lg:grid-cols-[420px_1fr] gap-8">
         {/* Form */}
         <form onSubmit={handleSubmit} className="bg-white border border-line rounded-2xl p-6 h-fit">
-          <h2 className="font-bold text-lg mb-4">
+          <h2 className="font-display font-semibold text-lg mb-4">
             {form.id ? "แก้ไขสินค้า" : "เพิ่มสินค้าใหม่"}
           </h2>
 
@@ -283,7 +294,7 @@ export default function AdminDashboard() {
                       <button
                         type="button"
                         onClick={() => removeImage(url)}
-                        className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs leading-5"
+                        className="absolute -top-1 -right-1 bg-accentDark text-white rounded-full w-5 h-5 text-xs leading-5"
                       >
                         ×
                       </button>
@@ -294,7 +305,7 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {message && <p className="text-sm mt-4 text-accentDark">{message}</p>}
+          {message && <p className="text-sm mt-4 text-primaryDark">{message}</p>}
 
           <div className="flex gap-3 mt-6">
             <button type="submit" disabled={saving} className="btn-primary flex-1">
@@ -315,7 +326,7 @@ export default function AdminDashboard() {
         {/* List */}
         <div className="bg-white border border-line rounded-2xl overflow-hidden h-fit">
           <table className="w-full text-sm">
-            <thead className="bg-haze text-left">
+            <thead className="bg-surface text-left">
               <tr>
                 <th className="p-3">สินค้า</th>
                 <th className="p-3">ราคา</th>
@@ -329,25 +340,25 @@ export default function AdminDashboard() {
                   <td className="p-3 flex items-center gap-3">
                     {p.images?.[0] ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={p.images[0]} alt="" className="w-10 h-10 rounded-lg object-cover bg-haze" />
+                      <img src={p.images[0]} alt="" className="w-10 h-10 rounded-lg object-cover bg-surface" />
                     ) : (
-                      <div className="w-10 h-10 rounded-lg bg-haze" />
+                      <div className="w-10 h-10 rounded-lg bg-surface" />
                     )}
                     <span className="font-medium">{p.name}</span>
                   </td>
-                  <td className="p-3">฿{new Intl.NumberFormat("th-TH").format(p.price)}</td>
+                  <td className="p-3 font-mono">฿{new Intl.NumberFormat("th-TH").format(p.price)}</td>
                   <td className="p-3">
                     {p.in_stock ? (
-                      <span className="text-xs font-semibold text-green-600">พร้อมขาย</span>
+                      <span className="text-xs font-semibold text-mintDark">พร้อมขาย</span>
                     ) : (
-                      <span className="text-xs font-semibold text-red-500">ขายแล้ว</span>
+                      <span className="text-xs font-semibold text-accentDark">ขายแล้ว</span>
                     )}
                   </td>
                   <td className="p-3 text-right space-x-3">
-                    <button onClick={() => editProduct(p)} className="text-accentDark font-semibold">
+                    <button onClick={() => editProduct(p)} className="text-primaryDark font-semibold">
                       แก้ไข
                     </button>
-                    <button onClick={() => deleteProduct(p.id)} className="text-red-500 font-semibold">
+                    <button onClick={() => deleteProduct(p.id)} className="text-accentDark font-semibold">
                       ลบ
                     </button>
                   </td>
