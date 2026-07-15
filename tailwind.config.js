@@ -1,38 +1,61 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: [
-    "./app/**/*.{js,jsx}",
-    "./components/**/*.{js,jsx}",
-  ],
-  theme: {
-    extend: {
-      colors: {
-        ink: "#15132A",
-        paper: "#ffffff",
-        surface: "#F6F4FF",
-        surfaceAlt: "#FFF1F0",
-        line: "#E7E3F7",
-        muted: "#726F8C",
-        primary: "#6C5CE7",
-        primaryDark: "#5546C8",
-        accent: "#FF5470",
-        accentDark: "#E63E5C",
-        mint: "#00C896",
-        mintDark: "#00A87D",
-      },
-      fontFamily: {
-        display: ["'Space Grotesk'", "system-ui", "sans-serif"],
-        body: ["'Inter'", "system-ui", "sans-serif"],
-        mono: ["'JetBrains Mono'", "ui-monospace", "monospace"],
-      },
-      maxWidth: {
-        shell: "1280px",
-      },
-      backgroundImage: {
-        "grad-brand": "linear-gradient(135deg, #6C5CE7 0%, #FF5470 100%)",
-        "grad-mint": "linear-gradient(135deg, #00C896 0%, #6C5CE7 100%)",
-      },
-    },
-  },
-  plugins: [],
-};
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { supabase } from "@/lib/supabaseClient";
+
+export default function AuthNav() {
+  const [status, setStatus] = useState("loading"); // loading | guest | customer | admin
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function load() {
+      const { data } = await supabase.auth.getSession();
+      if (!mounted) return;
+      if (!data.session) {
+        setStatus("guest");
+        return;
+      }
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_admin")
+        .eq("id", data.session.user.id)
+        .single();
+      if (!mounted) return;
+      setStatus(profile?.is_admin ? "admin" : "customer");
+    }
+
+    load();
+    const { data: sub } = supabase.auth.onAuthStateChange(() => load());
+    return () => {
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  if (status === "loading") {
+    return <span className="w-16 h-4 rounded bg-surface animate-pulse inline-block" />;
+  }
+
+  if (status === "guest") {
+    return (
+      <Link href="/login" className="text-sm font-semibold text-primaryDark hover:text-primary transition-colors">
+        เข้าสู่ระบบ
+      </Link>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-4">
+      {status === "admin" && (
+        <Link href="/admin/dashboard" className="text-sm text-muted hover:text-primary transition-colors hidden sm:inline">
+          แอดมิน
+        </Link>
+      )}
+      <Link href="/account" className="text-sm font-semibold text-primaryDark hover:text-primary transition-colors">
+        บัญชีของฉัน
+      </Link>
+    </div>
+  );
+}
