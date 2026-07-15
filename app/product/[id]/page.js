@@ -115,6 +115,9 @@ export default async function ProductPage({ params }) {
 
             {product.in_stock && (
               <div className="flex flex-wrap gap-4">
+                <a href={`/checkout/${product.id}`} className="btn-accent">
+                  สั่งซื้อเลย · โอน + แนบสลิป
+                </a>
                 {phone && (
                   <a href={`tel:${phone}`} className="btn-primary">
                     โทรสอบถาม {phone}
@@ -127,13 +130,20 @@ export default async function ProductPage({ params }) {
                     )}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="btn-accent"
+                    className="btn-secondary"
                   >
                     แชท WhatsApp
                   </a>
                 )}
               </div>
             )}
+
+            <a
+              href={`/reviews?product=${product.id}`}
+              className="inline-block text-sm text-muted hover:text-primary transition-colors mt-6"
+            >
+              ดูรีวิวสินค้านี้ →
+            </a>
           </div>
         </div>
       </main>

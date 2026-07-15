@@ -1,5 +1,7 @@
 import Link from "next/link";
 import GradeGauge from "./GradeGauge";
+// Note: brand text stays a <span> (not a nested <a>) since this whole card
+// is already a link — nested anchors are invalid HTML.
 
 function formatPrice(n) {
   if (n === null || n === undefined) return "";

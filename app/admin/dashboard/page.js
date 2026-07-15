@@ -22,6 +22,7 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [products, setProducts] = useState([]);
+  const [pendingOrders, setPendingOrders] = useState(0);
   const [form, setForm] = useState(emptyForm);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -36,14 +37,30 @@ export default function AdminDashboard() {
   }, []);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
+    async function check() {
+      const { data } = await supabase.auth.getSession();
       if (!data.session) {
         router.replace("/admin");
-      } else {
-        setCheckingAuth(false);
-        loadProducts();
+        return;
       }
-    });
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_admin")
+        .eq("id", data.session.user.id)
+        .single();
+      if (!profile?.is_admin) {
+        router.replace("/admin");
+        return;
+      }
+      setCheckingAuth(false);
+      loadProducts();
+      const { count } = await supabase
+        .from("orders")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "pending");
+      setPendingOrders(count || 0);
+    }
+    check();
   }, [router, loadProducts]);
 
   async function handleLogout() {
@@ -157,11 +174,25 @@ export default function AdminDashboard() {
     <main className="min-h-screen bg-surface pb-24">
       <header className="bg-white border-b border-line sticky top-0 z-30">
         <div className="container-shell h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <span className="w-7 h-7 rounded-lg bg-grad-brand flex items-center justify-center">
-              <span className="w-2 h-2 rounded-full bg-white/95" />
-            </span>
-            <h1 className="font-display font-semibold">แผงควบคุมแอดมิน</h1>
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2.5">
+              <span className="w-7 h-7 rounded-lg bg-grad-brand flex items-center justify-center">
+                <span className="w-2 h-2 rounded-full bg-white/95" />
+              </span>
+              <h1 className="font-display font-semibold">แผงควบคุมแอดมิน</h1>
+            </div>
+            <span className="text-sm font-semibold text-primaryDark">สินค้า</span>
+            <a href="/admin/orders" className="text-sm text-muted hover:text-primary transition-colors flex items-center gap-1.5">
+              ออเดอร์
+              {pendingOrders > 0 && (
+                <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-accent text-white leading-none">
+                  {pendingOrders}
+                </span>
+              )}
+            </a>
+            <a href="/admin/settings" className="text-sm text-muted hover:text-primary transition-colors">
+              ตั้งค่า QR
+            </a>
           </div>
           <div className="flex gap-4 items-center">
             <a href="/" className="text-sm text-muted hover:text-primary transition-colors">
@@ -173,6 +204,18 @@ export default function AdminDashboard() {
           </div>
         </div>
       </header>
+
+      {pendingOrders > 0 && (
+        <div className="container-shell pt-6">
+          <a
+            href="/admin/orders"
+            className="flex items-center justify-between bg-accent/10 border border-accent/30 text-accentDark rounded-xl px-4 py-3 text-sm font-semibold hover:bg-accent/15 transition-colors"
+          >
+            <span>🔔 มีคำสั่งซื้อใหม่รอตรวจสอบ {pendingOrders} รายการ</span>
+            <span>ไปหน้าออเดอร์ →</span>
+          </a>
+        </div>
+      )}
 
       <div className="container-shell pt-8 grid lg:grid-cols-[420px_1fr] gap-8">
         {/* Form */}

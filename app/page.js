@@ -108,7 +108,11 @@ export default async function HomePage() {
                     ).map((b) => (
                       <a
                         key={b.brand}
-                        href="#products"
+                        href={
+                          brandShortcuts.length > 0
+                            ? `/brand/${encodeURIComponent(b.brand)}`
+                            : "/products"
+                        }
                         className="flex flex-col items-center gap-2 group"
                       >
                         <span

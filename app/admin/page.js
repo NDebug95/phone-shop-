@@ -12,19 +12,40 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) router.replace("/admin/dashboard");
-    });
+    async function check() {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) return;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_admin")
+        .eq("id", data.session.user.id)
+        .single();
+      if (profile?.is_admin) router.replace("/admin/dashboard");
+    }
+    check();
   }, [router]);
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
+      setLoading(false);
       setError("อีเมลหรือรหัสผ่านไม่ถูกต้อง");
+      return;
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_admin")
+      .eq("id", data.user.id)
+      .single();
+
+    setLoading(false);
+    if (!profile?.is_admin) {
+      await supabase.auth.signOut();
+      setError("บัญชีนี้ไม่มีสิทธิ์เข้าหน้าแอดมิน");
       return;
     }
     router.push("/admin/dashboard");
